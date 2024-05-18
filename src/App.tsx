@@ -2,19 +2,22 @@ import { useEffect, useState } from 'react'
 import './App.scss'
 import Card from './components/Card'
 import { library } from './data/books.json'
-// import { animate } from 'motion'
+import { animate } from 'motion'
 
 function App() {
-  const [selectedList, updateList] = useState<string[]>([])
+  const [selectedList, updateList] = useState<number[]>([])
 
-  const selectCard = (key: string) => {
+  const selectCard = (key: number) => {
+    console.log(key)
     updateList([...selectedList, key])
+    animate(`#book-${key}`, { backgroundColor: 'red' })
   }
 
-  const removeCard = (key: string) => {
+  const removeCard = (key: number) => {
     const newList = [...selectedList]
     newList.splice(selectedList.indexOf(key), 1)
     updateList(newList)
+    animate(`#book-${key}`, { backgroundColor: 'none' })
   }
 
   useEffect(() => {
@@ -30,13 +33,13 @@ function App() {
             : 'row non-selected align-items-start'
         }
       >
-        {library.map((item) => (
+        {library.map((item, index) => (
           <Card
             img={item.book.cover}
             addInReadingList={selectCard}
             removeFromReadingList={removeCard}
             key={item.book.title}
-            id={item.book.title}
+            id={index}
           />
         ))}
       </div>
