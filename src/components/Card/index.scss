@@ -1,6 +1,12 @@
 .book-card {
+  min-width: 124px;
+  max-width: 124px;
+  width: fit-content;
+
   &.selected {
     // background-color: aqua;
+    position: absolute;
+    right: 8%;
   }
   img {
     width: 100px;

@@ -27,7 +27,9 @@ export default function Card({
 
   return (
     <article
-      className={selected ? 'book-card selected' : 'book-card'}
+      className={
+        selected ? 'book-card col-sm-1 selected' : 'book-card col-sm-1 my-2'
+      }
       onClick={onClick}
     >
       <img src={img} />
