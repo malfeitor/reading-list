@@ -1,0 +1,10 @@
+.book-card {
+  &.selected {
+    // background-color: aqua;
+  }
+  img {
+    width: 100px;
+    height: 150px;
+    border-radius: 10px;
+  }
+}
