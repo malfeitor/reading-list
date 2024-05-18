@@ -12,9 +12,9 @@ function App() {
   }
 
   const removeCard = (key: string) => {
-    const oldList = [...selectedList]
-    oldList.splice(selectedList.indexOf(key), 1)
-    updateList(oldList)
+    const newList = [...selectedList]
+    newList.splice(selectedList.indexOf(key), 1)
+    updateList(newList)
   }
 
   useEffect(() => {
@@ -26,8 +26,8 @@ function App() {
       <div
         className={
           selectedList.length > 0
-            ? 'row d-flex flex-wrap ali col-sm-10 non-selected'
-            : 'row non-selected'
+            ? 'row d-flex flex-wrap align-content-start col-sm-10 non-selected'
+            : 'row non-selected align-items-start'
         }
       >
         {library.map((item) => (
