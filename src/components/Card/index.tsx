@@ -6,7 +6,9 @@ type CardProps = {
   addInReadingList: (id: number) => void
   removeFromReadingList: (id: number) => void
   id: number
-  style: any
+  style: {
+    [key: string]: string
+  }
 }
 
 export default function Card({
