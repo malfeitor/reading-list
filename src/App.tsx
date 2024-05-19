@@ -2,9 +2,10 @@ import { useEffect, useState } from 'react'
 import './App.scss'
 import Card from './components/Card'
 import { library } from './data/books.json'
+import { LayoutGroup } from 'framer-motion'
 
 type StyleType = {
-  [key: string]: string | number
+  [key: string]: string | number | number[]
 }
 
 function App() {
@@ -13,15 +14,22 @@ function App() {
   const [unselectedList, updateUnselectedList] = useState<number[]>(
     library.map((item, index) => index)
   )
+  // stylelist contiendra les Z-Index des livres choisis
   const [styleList, setStyleList] = useState<StyleType[]>([])
+  // animlist contient les animations en cours
   const [animList, setAnimList] = useState<StyleType[]>([])
 
+  // fonction appellée quand on click sur un livre non selectionné
   const selectCard = (key: number) => {
+    const booksPerRow = selectedList.length > 0 ? 9 : 11
     const newAnimList = [...animList]
     newAnimList[key] = {
       ...animList[key],
-      x: READING_LIST_X,
-      y: 100 - 20 * selectedList.length,
+      x: [124 * (unselectedList.indexOf(key) % booksPerRow), READING_LIST_X],
+      y: [
+        176 * Math.floor(unselectedList.indexOf(key) / booksPerRow),
+        100 - 20 * selectedList.length,
+      ],
       scale: 1.8 - 0.05 * selectedList.length,
     }
     setAnimList(newAnimList)
@@ -38,6 +46,7 @@ function App() {
     updateList([...selectedList, key])
   }
 
+  // fonction appellée quand on click sur un livre déjà selectionné
   const removeCard = (key: number) => {
     const newList = [...selectedList]
     newList.splice(selectedList.indexOf(key), 1)
@@ -53,6 +62,7 @@ function App() {
     setAnimList(newAnimList)
   }
 
+  // on crée la liste des livres
   const bookList = library.map((item, index) => (
     <Card
       img={item.book.cover}
@@ -65,15 +75,12 @@ function App() {
     />
   ))
 
+  // on initialise les array d'animation et de style
   useEffect(() => {
     const newStyleList: StyleType[] = []
     const newAnimList: StyleType[] = []
     library.forEach((item, index) => {
-      newStyleList.push({
-        x: 124 * (index % 11),
-        y: 176 * Math.floor(index / 11),
-        zIndex: 0,
-      })
+      newStyleList.push({})
       newAnimList.push({ x: 0, y: 0 })
     })
     setStyleList(newStyleList)
@@ -89,7 +96,7 @@ function App() {
             : 'row non-selected align-items-start'
         }
       >
-        {bookList.map((book) => book)}
+        <LayoutGroup>{bookList.map((book) => book)}</LayoutGroup>
       </div>
       {selectedList.length > 0 ? (
         <div className="reading-list col-sm-2 ">
