@@ -1,10 +1,15 @@
 .book-card {
+  position: relative;
   min-width: 124px;
   max-width: 124px;
 
   &.selected {
     position: absolute;
-    right: 8%;
+    // right: 8%;
+    max-width: 0;
+    max-height: 0;
+
+    z-index: 1;
   }
   img {
     width: 100px;

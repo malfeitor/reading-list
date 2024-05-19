@@ -4,8 +4,12 @@
   padding: 0 !important;
 }
 
+.non-selected {
+  position: relative;
+}
+
 .reading-list {
   margin-left: auto;
-  background-color: aqua;
+  background-color: #999;
   height: 100vh;
 }

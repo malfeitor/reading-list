@@ -6,22 +6,35 @@ import { animate } from 'motion'
 
 function App() {
   const [selectedList, updateList] = useState<number[]>([])
+  const READING_LIST_X = window.innerWidth * 0.875
 
   const selectCard = (key: number) => {
-    console.log(key)
+    // console.log(key)
+    // console.log(READING_LIST_X)
+    animate(
+      `#book-${key}`,
+      {
+        x: READING_LIST_X,
+        y: 100 + 10 * selectedList.length,
+        scale: 1.8 - 0.05 * selectedList.length,
+      },
+      { duration: 0.5 }
+    )
+    // selectedList.map((item) => {
+    //   animate(`#book-${item}`, { y: +10 * selectedList.length })
+    // })
     updateList([...selectedList, key])
-    animate(`#book-${key}`, { backgroundColor: 'red' })
   }
 
   const removeCard = (key: number) => {
     const newList = [...selectedList]
     newList.splice(selectedList.indexOf(key), 1)
     updateList(newList)
-    animate(`#book-${key}`, { backgroundColor: 'none' })
+    animate(`#book-${key}`, { transform: 'translate(0px)' }, { duration: 0.5 })
   }
 
   useEffect(() => {
-    console.log(selectedList)
+    // console.log(selectedList)
   }, [selectedList])
 
   return (
