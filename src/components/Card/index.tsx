@@ -43,8 +43,10 @@ export default function Card({
       onClick={onClick}
       style={style}
       animate={anim}
+      initial={false}
+      transition={{ ease: 'easeInOut', duration: 1 }}
     >
-      <motion.img src={img} />
+      <img src={img} />
     </motion.article>
   )
 }
