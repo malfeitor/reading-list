@@ -4,13 +4,17 @@ import Card from './components/Card'
 import { library } from './data/books.json'
 import { animate } from 'motion'
 
+type StyleType = {
+  [key: string]: string | number
+}
+
 function App() {
   const READING_LIST_X = window.innerWidth * 0.875
   const [selectedList, updateList] = useState<number[]>([])
   const [unselectedList, updateUnselectedList] = useState<number[]>(
     library.map((item, index) => index)
   )
-  const [styleList, setStyleList] = useState([])
+  const [styleList, setStyleList] = useState<StyleType[]>([])
 
   const selectCard = (key: number) => {
     animate(
@@ -56,26 +60,17 @@ function App() {
   ))
 
   useEffect(() => {
-    const newStyleList = []
+    const newStyleList: StyleType[] = []
     library.forEach((item, index) => {
-      newStyleList.push({ x: 124 * index, y: 176 * 0, zIndex: 0 })
+      console.log('index ' + index + ' : ' + Math.floor(index / 11))
+      newStyleList.push({
+        x: 124 * (index % 11),
+        y: 176 * Math.floor(index / 11),
+        zIndex: 0,
+      })
     })
     setStyleList(newStyleList)
   }, [])
-
-  useEffect(() => {
-    console.log('Selected')
-    console.log(selectedList)
-    console.log('Unselected')
-    console.log(unselectedList)
-  }, [selectedList, unselectedList])
-
-  //
-  //
-  //
-
-  // const book = new Book(library[0].book.cover, 0)
-  // book.init()
 
   return (
     <div className="container-fluid row">
