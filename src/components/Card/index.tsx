@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { motion } from 'framer-motion'
 import './index.scss'
 
 type CardProps = {
@@ -9,6 +10,9 @@ type CardProps = {
   style: {
     [key: string]: string
   }
+  anim: {
+    [key: string]: string
+  }
 }
 
 export default function Card({
@@ -17,6 +21,7 @@ export default function Card({
   removeFromReadingList,
   id,
   style,
+  anim,
 }: CardProps) {
   const [selected, setSelected] = useState(false)
 
@@ -30,15 +35,16 @@ export default function Card({
   }
 
   return (
-    <article
+    <motion.article
       id={`book-${id}`}
       className={
         selected ? 'book-card col-sm-1 selected' : 'book-card col-sm-1 my-2'
       }
       onClick={onClick}
       style={style}
+      animate={anim}
     >
-      <img src={img} />
-    </article>
+      <motion.img src={img} />
+    </motion.article>
   )
 }

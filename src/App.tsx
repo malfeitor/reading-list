@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react'
 import './App.scss'
 import Card from './components/Card'
 import { library } from './data/books.json'
-import { animate } from 'motion'
 
 type StyleType = {
   [key: string]: string | number
@@ -15,23 +14,22 @@ function App() {
     library.map((item, index) => index)
   )
   const [styleList, setStyleList] = useState<StyleType[]>([])
+  const [animList, setAnimList] = useState<StyleType[]>([])
 
   const selectCard = (key: number) => {
-    animate(
-      `#book-${key}`,
-      {
-        x: [styleList[key]['x'], READING_LIST_X],
-        y: 100 - 20 * selectedList.length,
-        scale: 1.8 - 0.05 * selectedList.length,
-      },
-      { duration: 0.5 }
-    )
+    const newAnimList = [...animList]
+    newAnimList[key] = {
+      ...animList[key],
+      x: READING_LIST_X,
+      y: 100 - 20 * selectedList.length,
+      scale: 1.8 - 0.05 * selectedList.length,
+    }
+    setAnimList(newAnimList)
     const newStyles = [...styleList]
     newStyles[key] = {
       ...styleList[key],
       zIndex: bookList.length - selectedList.length,
     }
-
     setStyleList(newStyles)
 
     const oldUnselected = [...unselectedList]
@@ -45,7 +43,14 @@ function App() {
     newList.splice(selectedList.indexOf(key), 1)
     updateList(newList)
     updateUnselectedList([...unselectedList, key])
-    animate(`#book-${key}`, { transform: 'translate(0px)' }, { duration: 0.5 })
+    const newAnimList = [...animList]
+    newAnimList[key] = {
+      ...animList[key],
+      x: 0,
+      y: 0,
+      scale: 1,
+    }
+    setAnimList(newAnimList)
   }
 
   const bookList = library.map((item, index) => (
@@ -56,20 +61,23 @@ function App() {
       key={item.book.title}
       id={index}
       style={styleList[index]}
+      anim={animList[index]}
     />
   ))
 
   useEffect(() => {
     const newStyleList: StyleType[] = []
+    const newAnimList: StyleType[] = []
     library.forEach((item, index) => {
-      console.log('index ' + index + ' : ' + Math.floor(index / 11))
       newStyleList.push({
         x: 124 * (index % 11),
         y: 176 * Math.floor(index / 11),
         zIndex: 0,
       })
+      newAnimList.push({ x: 0, y: 0 })
     })
     setStyleList(newStyleList)
+    setAnimList(newAnimList)
   }, [])
 
   return (
