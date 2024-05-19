@@ -6,6 +6,7 @@ type CardProps = {
   addInReadingList: (id: number) => void
   removeFromReadingList: (id: number) => void
   id: number
+  style: any
 }
 
 export default function Card({
@@ -13,6 +14,7 @@ export default function Card({
   addInReadingList,
   removeFromReadingList,
   id,
+  style,
 }: CardProps) {
   const [selected, setSelected] = useState(false)
 
@@ -32,6 +34,7 @@ export default function Card({
         selected ? 'book-card col-sm-1 selected' : 'book-card col-sm-1 my-2'
       }
       onClick={onClick}
+      style={style}
     >
       <img src={img} />
     </article>
