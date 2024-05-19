@@ -2,10 +2,18 @@ import { useEffect, useState } from 'react'
 import './App.scss'
 import Card from './components/Card'
 import { library } from './data/books.json'
-import { LayoutGroup } from 'framer-motion'
+import { LayoutGroup, motion } from 'framer-motion'
 
 type StyleType = {
   [key: string]: string | number | number[]
+}
+
+const sortNumbers = (a, b) => {
+  const A = parseInt(a)
+  const B = parseInt(b)
+  if (A < B) return -1
+  if (A > B) return 1
+  return 0
 }
 
 function App() {
@@ -26,13 +34,10 @@ function App() {
     newAnimList[key] = {
       ...animList[key],
       x: [124 * (unselectedList.indexOf(key) % booksPerRow), READING_LIST_X],
-      y: [
-        176 * Math.floor(unselectedList.indexOf(key) / booksPerRow),
-        100 - 20 * selectedList.length,
-      ],
+      y: [176 * Math.floor(unselectedList.indexOf(key) / booksPerRow), 100],
       scale: 1.8 - 0.05 * selectedList.length,
     }
-    setAnimList(newAnimList)
+    // on met le z-index par rapport au nombre de livres dans la liste
     const newStyles = [...styleList]
     newStyles[key] = {
       ...styleList[key],
@@ -40,25 +45,37 @@ function App() {
     }
     setStyleList(newStyles)
 
+    // on pousse vers le bas les livres déjà dans la liste
+    selectedList.forEach((index) => {
+      newAnimList[index] = {
+        ...newAnimList[index],
+        y:
+          (newAnimList[index].y[1] || newAnimList[index].y) +
+          15 * (4 / selectedList.length + 1),
+      }
+    })
+    setAnimList(newAnimList)
+
     const oldUnselected = [...unselectedList]
     oldUnselected.splice(unselectedList.indexOf(key), 1)
-    updateUnselectedList(oldUnselected)
-    updateList([...selectedList, key])
+    updateUnselectedList(oldUnselected.sort(sortNumbers))
+    updateList([...selectedList, key].sort(sortNumbers))
   }
 
   // fonction appellée quand on click sur un livre déjà selectionné
   const removeCard = (key: number) => {
     const newList = [...selectedList]
     newList.splice(selectedList.indexOf(key), 1)
-    updateList(newList)
-    updateUnselectedList([...unselectedList, key])
+    updateList(newList.sort(sortNumbers))
+    updateUnselectedList([...unselectedList, key].sort(sortNumbers))
     const newAnimList = [...animList]
     newAnimList[key] = {
       ...animList[key],
-      x: 0,
-      y: 0,
+      x: [animList[key].x[1], 0],
+      y: [animList[key].y[1], 0],
       scale: 1,
     }
+    console.log(animList[key].x)
     setAnimList(newAnimList)
   }
 
@@ -72,6 +89,7 @@ function App() {
       id={index}
       style={styleList[index]}
       anim={animList[index]}
+      layout
     />
   ))
 
@@ -89,7 +107,7 @@ function App() {
 
   return (
     <div className="container-fluid row">
-      <div
+      <motion.div
         className={
           selectedList.length > 0
             ? 'row d-flex flex-wrap align-content-start col-sm-10 non-selected'
@@ -97,7 +115,7 @@ function App() {
         }
       >
         <LayoutGroup>{bookList.map((book) => book)}</LayoutGroup>
-      </div>
+      </motion.div>
       {selectedList.length > 0 ? (
         <div className="reading-list col-sm-2 ">
           <h2>Reading-List</h2>
