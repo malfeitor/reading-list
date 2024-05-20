@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import './App.scss'
 import { library } from './data/books.json'
-import { moveBooks } from './utils/animations'
+import { moveBooks, updateReadingListBooksSize } from './utils/animations'
 
 const bookList = library.map((item) => item.book.cover)
 
@@ -49,6 +49,10 @@ export default function App() {
           newRect: book.getBoundingClientRect(),
         })
       })
+      updateReadingListBooksSize(
+        choosenDiv.current?.childNodes,
+        bookList.length
+      )
     }
   }, [rectList])
 

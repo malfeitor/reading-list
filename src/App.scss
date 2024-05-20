@@ -16,7 +16,7 @@
   border-radius: 20px;
   padding: 10px;
   &.selected {
-    position: absolute;
+    margin: 100px 0 -450px;
   }
 }
 
@@ -24,10 +24,11 @@
   margin-left: auto;
   background-color: #999;
   height: 100vh;
+  width: 100%;
 }
 
 .reading-list {
-  position: absolute;
+  // position: absolute;
 }
 
 .hidden {
