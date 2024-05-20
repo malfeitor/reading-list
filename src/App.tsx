@@ -1,7 +1,7 @@
 import { useRef, useState } from 'react'
 import './App.scss'
 import { library } from './data/books.json'
-import { computeAnimation } from './utils/animations'
+import { moveBooks } from './utils/animations'
 
 const bookList = library.map((item) => item.book.cover)
 
@@ -29,7 +29,7 @@ export default function App() {
 
     const newRect = bookRefs.current.map((book) => book.getBoundingClientRect())
     bookRefs.current.forEach((book, index) => {
-      computeAnimation({
+      moveBooks({
         elem: book,
         oldRect: oldRect[index],
         newRect: newRect[index],
@@ -42,7 +42,7 @@ export default function App() {
       <div
         className={
           choosen.includes(true)
-            ? 'not-choosen d-flex flex-wrap col-sm-10'
+            ? 'not-choosen d-flex flex-wrap col-sm-9'
             : 'not-choosen d-flex flex-wrap col-sm-12'
         }
         ref={notChoosenDiv}
@@ -59,7 +59,7 @@ export default function App() {
       </div>
       <div
         className={
-          choosen.includes(true) ? 'choosen col-sm-2' : 'choosen hidden'
+          choosen.includes(true) ? 'choosen col-sm-3' : 'choosen hidden'
         }
       >
         <h2>Reading-List</h2>
