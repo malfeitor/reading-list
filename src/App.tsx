@@ -10,6 +10,7 @@ export default function App() {
   const [styleList, setStyleList] = useState([...bookList.map(() => {})])
   const choosenQuantity = () =>
     choosen.reduce((acc, curr) => acc + (curr ? 1 : 0), 0)
+
   const [rectList, setRectList] = useState<DOMRect[]>([])
 
   const bookRefs = useRef<HTMLImageElement[]>([])
@@ -26,14 +27,15 @@ export default function App() {
       book.classList.remove('selected')
       choosenDiv.current!.removeChild(book)
       notChoosenDiv.current!.append(book)
-      newStyle[index] = {}
+      newStyle[index] = { zIndex: 0 }
     } else {
       book.classList.add('selected')
       notChoosenDiv.current!.removeChild(book)
       choosenDiv.current!.append(book)
       newStyle[index] = {
-        zIndex: bookList.length - choosenQuantity(),
-        margin: `${200 + (index / bookList.length) * 50}px 0 -550px`,
+        margin: `${
+          200 + (choosenQuantity() / bookList.length) * 50
+        }px 0 -550px`,
       }
     }
 

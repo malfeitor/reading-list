@@ -18,10 +18,12 @@ export function updateReadingListBooksSize(
   choosenBooks: NodeListOf<ChildNode>,
   max: number
 ) {
-  console.log(choosenBooks)
   let index = max
   choosenBooks.forEach((book) => {
-    animate(book as Element, { scale: 1 + 0.05 * index })
+    animate(book as Element, {
+      zIndex: index,
+      scale: 1 + 0.05 * index,
+    })
     index--
   })
 }
