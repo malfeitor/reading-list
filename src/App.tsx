@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import './App.scss'
 import { library } from './data/books.json'
 import { moveBooks } from './utils/animations'
@@ -7,39 +7,56 @@ const bookList = library.map((item) => item.book.cover)
 
 export default function App() {
   const [choosen, setChoosen] = useState([...bookList.map(() => false)])
+  const [styleList, setStyleList] = useState([...bookList.map(() => {})])
+  const choosenQuantity = () =>
+    choosen.reduce((acc, curr) => acc + (curr ? 1 : 0), 0)
+  const [rectList, setRectList] = useState<DOMRect[]>([])
+
   const bookRefs = useRef<HTMLImageElement[]>([])
   const notChoosenDiv = useRef<HTMLDivElement>(null)
   const choosenDiv = useRef<HTMLDivElement>(null)
 
   function toggleBook(index: number) {
-    const oldRect = bookRefs.current.map((book) => book.getBoundingClientRect())
+    // snapshot books positions for animation
+    setRectList(bookRefs.current.map((book) => book.getBoundingClientRect()))
+
     const book = bookRefs.current[index]
+    const newStyle = [...styleList]
     if (choosen[index]) {
       book.classList.remove('selected')
       choosenDiv.current!.removeChild(book)
       notChoosenDiv.current!.append(book)
+      newStyle[index] = {}
     } else {
       book.classList.add('selected')
       notChoosenDiv.current!.removeChild(book)
       choosenDiv.current!.append(book)
+      newStyle[index] = { zIndex: bookList.length - choosenQuantity() }
     }
 
     const newChoosen = [...choosen]
     newChoosen[index] = !newChoosen[index]
     setChoosen(newChoosen)
-
-    const newRect = bookRefs.current.map((book) => book.getBoundingClientRect())
-    bookRefs.current.forEach((book, index) => {
-      moveBooks({
-        elem: book,
-        oldRect: oldRect[index],
-        newRect: newRect[index],
-      })
-    })
+    setStyleList(newStyle)
   }
 
+  useEffect(() => {
+    if (rectList.length > 0) {
+      const newRect = bookRefs.current.map((book) =>
+        book.getBoundingClientRect()
+      )
+      bookRefs.current.forEach((book, index) => {
+        moveBooks({
+          elem: book,
+          oldRect: rectList[index],
+          newRect: newRect[index],
+        })
+      })
+    }
+  }, [rectList])
+
   return (
-    <div className="container-fluid d-flex flex-direction-row">
+    <div className="container-fluid d-flex ">
       <div
         className={
           choosen.includes(true)
@@ -50,11 +67,12 @@ export default function App() {
       >
         {bookList.map((book, index) => (
           <img
-            className="book"
+            className="book "
             src={book}
             ref={(e) => (bookRefs.current[index] = e)}
             onClick={() => toggleBook(index)}
             key={index}
+            style={styleList[index]}
           />
         ))}
       </div>
