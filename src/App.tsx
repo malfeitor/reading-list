@@ -31,7 +31,10 @@ export default function App() {
       book.classList.add('selected')
       notChoosenDiv.current!.removeChild(book)
       choosenDiv.current!.append(book)
-      newStyle[index] = { zIndex: bookList.length - choosenQuantity() }
+      newStyle[index] = {
+        zIndex: bookList.length - choosenQuantity(),
+        margin: `${200 + (index / bookList.length) * 50}px 0 -550px`,
+      }
     }
 
     const newChoosen = [...choosen]
