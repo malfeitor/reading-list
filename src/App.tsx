@@ -13,14 +13,15 @@ export default function App() {
 
   function toggleBook(index: number) {
     const oldRect = bookRefs.current.map((book) => book.getBoundingClientRect())
+    const book = bookRefs.current[index]
     if (choosen[index]) {
-      bookRefs.current[index].classList.remove('selected')
-      choosenDiv.current!.removeChild(bookRefs.current[index])
-      notChoosenDiv.current!.append(bookRefs.current[index])
+      book.classList.remove('selected')
+      choosenDiv.current!.removeChild(book)
+      notChoosenDiv.current!.append(book)
     } else {
-      bookRefs.current[index].classList.add('selected')
-      notChoosenDiv.current!.removeChild(bookRefs.current[index])
-      choosenDiv.current!.append(bookRefs.current[index])
+      book.classList.add('selected')
+      notChoosenDiv.current!.removeChild(book)
+      choosenDiv.current!.append(book)
     }
 
     const newChoosen = [...choosen]
@@ -64,7 +65,7 @@ export default function App() {
       >
         <h2>Reading-List</h2>
         <hr />
-        <div className="" ref={choosenDiv}></div>
+        <div className="reading-list d-flex flex-column" ref={choosenDiv}></div>
       </div>
     </div>
   )
