@@ -5,20 +5,22 @@
 }
 
 .not-choosen {
-  // position: relative;
+  height: fit-content;
 }
 
 .book {
-  width: 100px;
+  width: 200px;
+  height: 300px;
+  border-radius: 10px;
+  margin: 10px;
 }
 
 .choosen {
   margin-left: auto;
   background-color: #999;
-  // height: 100vh;
+  height: 100vh;
 }
 
 .hidden {
-  display: none;
   visibility: collapse;
 }

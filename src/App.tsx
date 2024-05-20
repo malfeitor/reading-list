@@ -12,20 +12,21 @@ export default function App() {
   const choosenDiv = useRef<HTMLDivElement>(null)
 
   function toggleBook(index: number) {
-    console.log(bookRefs)
     const oldRect = bookRefs.current.map((book) => book.getBoundingClientRect())
     if (choosen[index]) {
-      bookRefs.current[index].classList.add('col-sm-1')
+      bookRefs.current[index].classList.remove('selected')
       choosenDiv.current!.removeChild(bookRefs.current[index])
       notChoosenDiv.current!.append(bookRefs.current[index])
     } else {
-      bookRefs.current[index].classList.remove('col-sm-1')
+      bookRefs.current[index].classList.add('selected')
       notChoosenDiv.current!.removeChild(bookRefs.current[index])
       choosenDiv.current!.append(bookRefs.current[index])
     }
+
     const newChoosen = [...choosen]
     newChoosen[index] = !newChoosen[index]
     setChoosen(newChoosen)
+
     const newRect = bookRefs.current.map((book) => book.getBoundingClientRect())
     bookRefs.current.forEach((book, index) => {
       computeAnimation({
@@ -38,10 +39,17 @@ export default function App() {
 
   return (
     <div className="container-fluid d-flex flex-direction-row">
-      <div className="not-choosen d-flex flex-wrap" ref={notChoosenDiv}>
+      <div
+        className={
+          choosen.includes(true)
+            ? 'not-choosen d-flex flex-wrap col-sm-10'
+            : 'not-choosen d-flex flex-wrap col-sm-12'
+        }
+        ref={notChoosenDiv}
+      >
         {bookList.map((book, index) => (
           <img
-            className="book col-sm-1"
+            className="book"
             src={book}
             ref={(e) => (bookRefs.current[index] = e)}
             onClick={() => toggleBook(index)}
