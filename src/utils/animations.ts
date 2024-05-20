@@ -11,7 +11,17 @@ export function moveBooks({ elem, oldRect, newRect }: ComputeAnimationProps) {
   // first we set it at his old place
   animate(elem, { x: translate.x, y: translate.y }, { duration: 0 })
   // then we move it
-  animate(elem, { x: 0, y: 0 }, { duration: 1 })
+  animate(elem, { x: 0, y: 0, scale: 1 }, { duration: 1 })
 }
 
-// export function resizeAnimation({elem, })
+export function updateReadingListBooksSize(
+  choosenBooks: NodeListOf<ChildNode>,
+  max: number
+) {
+  console.log(choosenBooks)
+  let index = max
+  choosenBooks.forEach((book) => {
+    animate(book as Element, { scale: 1 + 0.05 * index })
+    index--
+  })
+}
