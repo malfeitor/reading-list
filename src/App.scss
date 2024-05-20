@@ -4,12 +4,21 @@
   padding: 0 !important;
 }
 
-.non-selected {
-  position: relative;
+.not-choosen {
+  // position: relative;
 }
 
-.reading-list {
+.book {
+  width: 100px;
+}
+
+.choosen {
   margin-left: auto;
   background-color: #999;
-  height: 100vh;
+  // height: 100vh;
+}
+
+.hidden {
+  display: none;
+  visibility: collapse;
 }
