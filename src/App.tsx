@@ -50,7 +50,7 @@ export default function App() {
         })
       })
       updateReadingListBooksSize(
-        choosenDiv.current?.childNodes,
+        choosenDiv.current!.childNodes,
         bookList.length
       )
     }
