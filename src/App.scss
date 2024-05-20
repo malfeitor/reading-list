@@ -29,5 +29,7 @@
 }
 
 .hidden {
-  visibility: collapse;
+  visibility: hidden;
+  position: absolute;
+  right: 0;
 }
