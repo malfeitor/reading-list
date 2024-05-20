@@ -13,12 +13,19 @@
   height: 300px;
   border-radius: 10px;
   margin: 10px;
+  .selected {
+    position: absolute;
+  }
 }
 
 .choosen {
   margin-left: auto;
   background-color: #999;
   height: 100vh;
+}
+
+.reading-list {
+  position: absolute;
 }
 
 .hidden {
