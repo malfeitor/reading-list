@@ -1,7 +1,7 @@
 import { useRef, useState } from 'react'
 import './App.scss'
 import { library } from './data/books.json'
-import { animate } from 'motion'
+import { computeAnimation } from './utils/animations'
 
 const bookList = library.map((item) => item.book.cover)
 
@@ -15,9 +15,11 @@ export default function App() {
     console.log(bookRefs)
     const oldRect = bookRefs.current.map((book) => book.getBoundingClientRect())
     if (choosen[index]) {
+      bookRefs.current[index].classList.add('col-sm-1')
       choosenDiv.current!.removeChild(bookRefs.current[index])
       notChoosenDiv.current!.append(bookRefs.current[index])
     } else {
+      bookRefs.current[index].classList.remove('col-sm-1')
       notChoosenDiv.current!.removeChild(bookRefs.current[index])
       choosenDiv.current!.append(bookRefs.current[index])
     }
@@ -34,27 +36,12 @@ export default function App() {
     })
   }
 
-  type ComputeAnimationProps = {
-    elem: HTMLElement
-    oldRect: DOMRect
-    newRect: DOMRect
-  }
-
-  function computeAnimation({ elem, oldRect, newRect }: ComputeAnimationProps) {
-    console.log(oldRect)
-    const translate = { x: oldRect.x - newRect.x, y: oldRect.y - newRect.y }
-    // first we set it at his old place
-    animate(elem, { x: translate.x, y: translate.y }, { duration: 0 })
-    // then we move it
-    animate(elem, { x: 0, y: 0 }, { duration: 1 })
-  }
-
   return (
-    <div className="container">
-      <div className="not-choosen" ref={notChoosenDiv}>
+    <div className="container-fluid d-flex flex-direction-row">
+      <div className="not-choosen d-flex flex-wrap" ref={notChoosenDiv}>
         {bookList.map((book, index) => (
           <img
-            className="col-sm-1 book"
+            className="book col-sm-1"
             src={book}
             ref={(e) => (bookRefs.current[index] = e)}
             onClick={() => toggleBook(index)}
@@ -62,7 +49,15 @@ export default function App() {
           />
         ))}
       </div>
-      <div className="choosen" ref={choosenDiv}></div>
+      <div
+        className={
+          choosen.includes(true) ? 'choosen col-sm-2' : 'choosen hidden'
+        }
+      >
+        <h2>Reading-List</h2>
+        <hr />
+        <div className="" ref={choosenDiv}></div>
+      </div>
     </div>
   )
 }
