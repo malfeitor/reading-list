@@ -1,131 +1,50 @@
-import { useEffect, useState } from 'react'
+import { useRef, useState } from 'react'
 import './App.scss'
-import Card from './components/Card'
+// import Card from './components/Card'
 import { library } from './data/books.json'
-import { LayoutGroup, motion } from 'framer-motion'
+// import { motion } from 'framer-motion'
 
-type StyleType = {
-  [key: string]: string | number | number[]
-}
+const bookList = library.map((item) => item.book.cover)
 
-const sortNumbers = (a, b) => {
-  const A = parseInt(a)
-  const B = parseInt(b)
-  if (A < B) return -1
-  if (A > B) return 1
-  return 0
-}
+export default function App() {
+  const [choosen, setChoosen] = useState([...bookList.map(() => false)])
+  const bookRefs = useRef([])
+  const notChoosenDiv = useRef(null)
+  const choosenDiv = useRef(null)
 
-function App() {
-  const READING_LIST_X = window.innerWidth * 0.875
-  const [selectedList, updateList] = useState<number[]>([])
-  const [unselectedList, updateUnselectedList] = useState<number[]>(
-    library.map((item, index) => index)
-  )
-  // stylelist contiendra les Z-Index des livres choisis
-  const [styleList, setStyleList] = useState<StyleType[]>([])
-  // animlist contient les animations en cours
-  const [animList, setAnimList] = useState<StyleType[]>([])
-
-  // fonction appellée quand on click sur un livre non selectionné
-  const selectCard = (key: number) => {
-    const booksPerRow = selectedList.length > 0 ? 9 : 11
-    const newAnimList = [...animList]
-    newAnimList[key] = {
-      ...animList[key],
-      x: [124 * (unselectedList.indexOf(key) % booksPerRow), READING_LIST_X],
-      y: [176 * Math.floor(unselectedList.indexOf(key) / booksPerRow), 100],
-      scale: 1.8 - 0.05 * selectedList.length,
+  function toggleBook(index) {
+    if (choosen[index]) {
+      choosenDiv.current.removeChild(bookRefs[index])
+      notChoosenDiv.current.append(bookRefs[index])
+    } else {
+      notChoosenDiv.current.removeChild(bookRefs[index])
+      choosenDiv.current.append(bookRefs[index])
     }
-    // on met le z-index par rapport au nombre de livres dans la liste
-    const newStyles = [...styleList]
-    newStyles[key] = {
-      ...styleList[key],
-      zIndex: bookList.length - selectedList.length,
-    }
-    setStyleList(newStyles)
-
-    // on pousse vers le bas les livres déjà dans la liste
-    selectedList.forEach((index) => {
-      newAnimList[index] = {
-        ...newAnimList[index],
-        y:
-          (newAnimList[index].y[1] || newAnimList[index].y) +
-          15 * (4 / selectedList.length + 1),
-      }
-    })
-    setAnimList(newAnimList)
-
-    const oldUnselected = [...unselectedList]
-    oldUnselected.splice(unselectedList.indexOf(key), 1)
-    updateUnselectedList(oldUnselected.sort(sortNumbers))
-    updateList([...selectedList, key].sort(sortNumbers))
+    const newChoosen = [...choosen]
+    newChoosen[index] = !newChoosen[index]
+    setChoosen(newChoosen)
+    computeAnimation(bookRefs[index])
   }
 
-  // fonction appellée quand on click sur un livre déjà selectionné
-  const removeCard = (key: number) => {
-    const newList = [...selectedList]
-    newList.splice(selectedList.indexOf(key), 1)
-    updateList(newList.sort(sortNumbers))
-    updateUnselectedList([...unselectedList, key].sort(sortNumbers))
-    const newAnimList = [...animList]
-    newAnimList[key] = {
-      ...animList[key],
-      x: [animList[key].x[1], 0],
-      y: [animList[key].y[1], 0],
-      scale: 1,
-    }
-    console.log(animList[key].x)
-    setAnimList(newAnimList)
+  function computeAnimation(elem: HTMLElement) {
+    console.log(elem.getBoundingClientRect())
+    return
   }
-
-  // on crée la liste des livres
-  const bookList = library.map((item, index) => (
-    <Card
-      img={item.book.cover}
-      addInReadingList={selectCard}
-      removeFromReadingList={removeCard}
-      key={item.book.title}
-      id={index}
-      style={styleList[index]}
-      anim={animList[index]}
-      layout
-    />
-  ))
-
-  // on initialise les array d'animation et de style
-  useEffect(() => {
-    const newStyleList: StyleType[] = []
-    const newAnimList: StyleType[] = []
-    library.forEach((item, index) => {
-      newStyleList.push({})
-      newAnimList.push({ x: 0, y: 0 })
-    })
-    setStyleList(newStyleList)
-    setAnimList(newAnimList)
-  }, [])
 
   return (
-    <div className="container-fluid row">
-      <motion.div
-        className={
-          selectedList.length > 0
-            ? 'row d-flex flex-wrap align-content-start col-sm-10 non-selected'
-            : 'row non-selected align-items-start'
-        }
-      >
-        <LayoutGroup>{bookList.map((book) => book)}</LayoutGroup>
-      </motion.div>
-      {selectedList.length > 0 ? (
-        <div className="reading-list col-sm-2 ">
-          <h2>Reading-List</h2>
-          <hr className="dashed" />
-        </div>
-      ) : (
-        ''
-      )}
+    <div className="container">
+      <div className="not-choosen" ref={notChoosenDiv}>
+        {bookList.map((book, index) => (
+          <img
+            className="col-sm-1"
+            src={book}
+            ref={(e) => (bookRefs[index] = e)}
+            onClick={() => toggleBook(index)}
+            key={index}
+          />
+        ))}
+      </div>
+      <div className="choosen" ref={choosenDiv}></div>
     </div>
   )
 }
-
-export default App

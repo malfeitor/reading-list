@@ -5,3 +5,7 @@ Bootstrap
 useState
 useMemo
 https://x.com/JoshWComeau/status/1678893330480898049
+
+mettre les livres sortis à la fin de la liste
+mettre le livre supprimé en dernier dans des visibles
+besoin de ref pour getBoundingRect
