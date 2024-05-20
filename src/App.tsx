@@ -42,14 +42,11 @@ export default function App() {
 
   useEffect(() => {
     if (rectList.length > 0) {
-      const newRect = bookRefs.current.map((book) =>
-        book.getBoundingClientRect()
-      )
       bookRefs.current.forEach((book, index) => {
         moveBooks({
           elem: book,
           oldRect: rectList[index],
-          newRect: newRect[index],
+          newRect: book.getBoundingClientRect(),
         })
       })
     }
