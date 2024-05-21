@@ -21,24 +21,74 @@ export default function App() {
       animation={animList[index]}
       key={index}
       onClick={() => bookClick(index)}
-      mouseOut={() => bookOut()}
+      mouseOut={() => bookOut(index)}
       mouseOver={() => bookOver(index)}
     />
   ))
 
-  const [bookshelfBooks, setBookshelfBooks] = useState([...booksAvailable])
-  const [readingBooks, setReadingBooks] = useState([])
+  const [bookshelfBooks, setBookshelfBooks] = useState<number[]>(
+    booksAvailable.map((item, index) => index)
+  )
+  const [readingBooks, setReadingBooks] = useState<number[]>([])
 
-  function bookClick(bookIndex) {
+  function bookClick(bookIndex: number) {
     alert(bookIndex)
+    //   if (animationRunning) return
+    //   // snapshot books positions for animation
+    //   setRectList(bookRefs.current.map((book) => book.getBoundingClientRect()))
+
+    //   const book = bookRefs.current[index]
+    //   const newStyle = [...styleList]
+    //   if (choosen[index]) {
+    //     book.classList.remove('selected')
+    //     choosenDiv.current!.removeChild(book)
+    //     notChoosenDiv.current!.append(book)
+    //     newStyle[index] = { zIndex: 0, margin: 0 }
+    //     setLastAction(-1)
+    //   } else {
+    //     book.classList.add('selected')
+    //     notChoosenDiv.current!.removeChild(book)
+    //     choosenDiv.current!.append(book)
+    //     setLastAction(index)
+    //   }
+
+    //   const newChoosen = [...choosen]
+    //   newChoosen[index] = !newChoosen[index]
+    //   setChoosen(newChoosen)
+    //   setStyleList(newStyle)
   }
 
-  function bookOver(bookIndex) {
-    console.log('Over ' + bookIndex)
+  function bookOver(bookIndex: number) {
+    if (readingBooks.includes(bookIndex)) {
+      console.log('Over ' + bookIndex)
+    }
+    // choosenDiv.current!.childNodes.forEach((book, index) => {
+    //     if (index < bookOverIndex) {
+    //       animate(
+    //         book as HTMLElement,
+    //         {
+    //           y:
+    //             choosenBooksRect[index].y +
+    //             choosenBooksRect[index].height / 2 +
+    //             30,
+    //         },
+    //         { duration: 1 }
+    //       )
+    //     }
+    //   })
   }
 
-  function bookOut() {
-    console.log('Out')
+  function bookOut(bookIndex: number) {
+    if (readingBooks.includes(bookIndex)) {
+      console.log('Out')
+    }
+    //   choosenDiv.current!.childNodes.forEach((book, index) => {
+    //     animate(
+    //       book as HTMLElement,
+    //       { y: choosenBooksRect[index].y + choosenBooksRect[index].height / 3 },
+    //       { duration: 1 }
+    //     )
+    //   })
   }
   // const [justAddedBook, setLastAction] = useState(-1)
 
@@ -50,59 +100,6 @@ export default function App() {
 
   // const choosenBooksRect: DOMRect[] = []
   // let animationRunning = false
-
-  // function hoverBook(bookOverIndex: number) {
-  //   choosenDiv.current!.childNodes.forEach((book, index) => {
-  //     if (index < bookOverIndex) {
-  //       animate(
-  //         book as HTMLElement,
-  //         {
-  //           y:
-  //             choosenBooksRect[index].y +
-  //             choosenBooksRect[index].height / 2 +
-  //             30,
-  //         },
-  //         { duration: 1 }
-  //       )
-  //     }
-  //   })
-  // }
-
-  // function blurBook() {
-  //   choosenDiv.current!.childNodes.forEach((book, index) => {
-  //     animate(
-  //       book as HTMLElement,
-  //       { y: choosenBooksRect[index].y + choosenBooksRect[index].height / 3 },
-  //       { duration: 1 }
-  //     )
-  //   })
-  // }
-
-  // function toggleBook(index: number) {
-  //   if (animationRunning) return
-  //   // snapshot books positions for animation
-  //   setRectList(bookRefs.current.map((book) => book.getBoundingClientRect()))
-
-  //   const book = bookRefs.current[index]
-  //   const newStyle = [...styleList]
-  //   if (choosen[index]) {
-  //     book.classList.remove('selected')
-  //     choosenDiv.current!.removeChild(book)
-  //     notChoosenDiv.current!.append(book)
-  //     newStyle[index] = { zIndex: 0, margin: 0 }
-  //     setLastAction(-1)
-  //   } else {
-  //     book.classList.add('selected')
-  //     notChoosenDiv.current!.removeChild(book)
-  //     choosenDiv.current!.append(book)
-  //     setLastAction(index)
-  //   }
-
-  //   const newChoosen = [...choosen]
-  //   newChoosen[index] = !newChoosen[index]
-  //   setChoosen(newChoosen)
-  //   setStyleList(newStyle)
-  // }
 
   // useEffect(() => {
   //   if (rectList.length > 0) {
@@ -149,7 +146,9 @@ export default function App() {
 
   return (
     <Container fluid className="d-flex">
-      <Bookshelf>{bookshelfBooks.map((item) => item)}</Bookshelf>
+      <Bookshelf>
+        {bookshelfBooks.map((index) => booksAvailable[index])}
+      </Bookshelf>
       <ReadingList>{readingBooks.map((item) => item)}</ReadingList>
       {/* <div
         className={
