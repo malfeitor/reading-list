@@ -71,7 +71,7 @@ export default function App() {
       >
         {bookList.map((book, index) => (
           <img
-            className="book "
+            className="book rounded-4"
             src={book}
             ref={(e) => (bookRefs.current[index] = e)}
             onClick={() => toggleBook(index)}
