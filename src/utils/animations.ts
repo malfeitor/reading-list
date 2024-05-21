@@ -1,3 +1,4 @@
+import { AnimationControls } from 'motion'
 import { animate } from 'motion'
 
 type ComputeAnimationProps = {
@@ -18,19 +19,23 @@ export function updateReadingListBooksSize(
   choosenBooks: NodeListOf<ChildNode>,
   max: number
 ) {
+  const animateStatus = <AnimationControls[]>[]
   choosenBooks.forEach((book, index) => {
     const reversedIndex = max - index
     const ratio = (reversedIndex * 2) / max
     const remainingBooks = choosenBooks.length - (index + 1)
     const heigthDiff = 7.5 * choosenBooks.length
-    animate(
-      book as Element,
-      {
-        zIndex: reversedIndex,
-        scale: 1 + 0.05 * reversedIndex,
-        y: 250 - heigthDiff + 20 * ratio * remainingBooks,
-      },
-      { duration: 1 }
+    animateStatus.push(
+      animate(
+        book as Element,
+        {
+          zIndex: reversedIndex,
+          scale: 1 + 0.05 * reversedIndex,
+          y: 250 - heigthDiff + 20 * ratio * remainingBooks,
+        },
+        { duration: 1 }
+      )
     )
   })
+  return animateStatus
 }

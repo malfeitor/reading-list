@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import './App.scss'
 import { library } from './data/books.json'
 import { moveBooks, updateReadingListBooksSize } from './utils/animations'
+import { animate } from 'motion'
 
 const bookList = library.map((item) => item.book.cover)
 
@@ -16,7 +17,38 @@ export default function App() {
   const notChoosenDiv = useRef<HTMLDivElement>(null)
   const choosenDiv = useRef<HTMLDivElement>(null)
 
+  const choosenBooksRect: DOMRect[] = []
+  let animationRunning = false
+
+  function hoverBook(bookOverIndex: number) {
+    choosenDiv.current!.childNodes.forEach((book, index) => {
+      if (index < bookOverIndex) {
+        animate(
+          book as HTMLElement,
+          {
+            y:
+              choosenBooksRect[index].y +
+              choosenBooksRect[index].height / 2 +
+              30,
+          },
+          { duration: 1 }
+        )
+      }
+    })
+  }
+
+  function blurBook() {
+    choosenDiv.current!.childNodes.forEach((book, index) => {
+      animate(
+        book as HTMLElement,
+        { y: choosenBooksRect[index].y + choosenBooksRect[index].height / 3 },
+        { duration: 1 }
+      )
+    })
+  }
+
   function toggleBook(index: number) {
+    if (animationRunning) return
     // snapshot books positions for animation
     setRectList(bookRefs.current.map((book) => book.getBoundingClientRect()))
 
@@ -43,7 +75,10 @@ export default function App() {
 
   useEffect(() => {
     if (rectList.length > 0) {
+      animationRunning = true
       bookRefs.current.forEach((book, index) => {
+        book.removeEventListener('mouseover', book.bookOver)
+        book.removeEventListener('mouseout', book.bookOut)
         if (!choosen[index] || index === justAddedBook) {
           moveBooks({
             elem: book,
@@ -52,12 +87,34 @@ export default function App() {
           })
         }
       })
-      updateReadingListBooksSize(
+      const updatingStatus = updateReadingListBooksSize(
         choosenDiv.current!.childNodes,
         bookList.length
       )
+      updatingStatus.forEach(
+        async (status, index) =>
+          await status.finished.then(() => {
+            if (index === updatingStatus.length - 1) {
+              choosenDiv.current!.childNodes.forEach((book, index) => {
+                choosenBooksRect[index] = (
+                  book as HTMLElement
+                ).getBoundingClientRect()
+                book.addEventListener(
+                  'mouseover',
+                  (book.bookOver = () => hoverBook(index))
+                )
+                book.addEventListener(
+                  'mouseout',
+                  (book.bookOut = () => blurBook())
+                )
+              })
+            }
+            animationRunning = false
+          })
+      )
+      if (updatingStatus.length === 0) animationRunning = false
     }
-  }, [rectList, choosen])
+  }, [rectList, choosen, justAddedBook])
 
   return (
     <div className="container-fluid d-flex ">
