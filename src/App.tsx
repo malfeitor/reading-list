@@ -8,8 +8,7 @@ const bookList = library.map((item) => item.book.cover)
 export default function App() {
   const [choosen, setChoosen] = useState([...bookList.map(() => false)])
   const [styleList, setStyleList] = useState([...bookList.map(() => {})])
-  const choosenQuantity = () =>
-    choosen.reduce((acc, curr) => acc + (curr ? 1 : 0), 0)
+  const [justAddedBook, setLastAction] = useState(-1)
 
   const [rectList, setRectList] = useState<DOMRect[]>([])
 
@@ -27,16 +26,13 @@ export default function App() {
       book.classList.remove('selected')
       choosenDiv.current!.removeChild(book)
       notChoosenDiv.current!.append(book)
-      newStyle[index] = { zIndex: 0 }
+      newStyle[index] = { zIndex: 0, margin: 0 }
+      setLastAction(-1)
     } else {
       book.classList.add('selected')
       notChoosenDiv.current!.removeChild(book)
       choosenDiv.current!.append(book)
-      newStyle[index] = {
-        margin: `${
-          200 + (choosenQuantity() / bookList.length) * 50
-        }px 0 -550px`,
-      }
+      setLastAction(index)
     }
 
     const newChoosen = [...choosen]
@@ -48,18 +44,20 @@ export default function App() {
   useEffect(() => {
     if (rectList.length > 0) {
       bookRefs.current.forEach((book, index) => {
-        moveBooks({
-          elem: book,
-          oldRect: rectList[index],
-          newRect: book.getBoundingClientRect(),
-        })
+        if (!choosen[index] || index === justAddedBook) {
+          moveBooks({
+            elem: book,
+            oldRect: rectList[index],
+            newRect: book.getBoundingClientRect(),
+          })
+        }
       })
       updateReadingListBooksSize(
         choosenDiv.current!.childNodes,
         bookList.length
       )
     }
-  }, [rectList])
+  }, [rectList, choosen])
 
   return (
     <div className="container-fluid d-flex ">

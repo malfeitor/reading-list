@@ -9,3 +9,8 @@ https://x.com/JoshWComeau/status/1678893330480898049
 mettre les livres sortis à la fin de la liste
 mettre le livre supprimé en dernier dans des visibles
 besoin de ref pour getBoundingRect
+
+hover les book choosen -> décaler la margin et hop ? 
+book choosen > recalculer margin à chaque render
+
+bloquer actions avec await sur les animate() 
