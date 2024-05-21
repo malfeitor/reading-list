@@ -32,7 +32,19 @@ export default function App() {
   const [readingBooks, setReadingBooks] = useState<number[]>([])
 
   function bookClick(bookIndex: number) {
-    alert(bookIndex)
+    const newReadingBooks = [...readingBooks]
+    const newBookshelf = [...bookshelfBooks]
+    if (bookshelfBooks.includes(bookIndex)) {
+      console.log('Bookshelf contains ' + bookIndex)
+      newReadingBooks.push(bookIndex)
+      newBookshelf.splice(newBookshelf.indexOf(bookIndex), 1)
+    } else {
+      console.log('Reading list contains ' + bookIndex)
+      newBookshelf.push(bookIndex)
+      newReadingBooks.splice(newReadingBooks.indexOf(bookIndex), 1)
+    }
+    setBookshelfBooks(newBookshelf)
+    setReadingBooks(newReadingBooks)
     //   if (animationRunning) return
     //   // snapshot books positions for animation
     //   setRectList(bookRefs.current.map((book) => book.getBoundingClientRect()))
@@ -149,7 +161,9 @@ export default function App() {
       <Bookshelf>
         {bookshelfBooks.map((index) => booksAvailable[index])}
       </Bookshelf>
-      <ReadingList>{readingBooks.map((item) => item)}</ReadingList>
+      <ReadingList>
+        {readingBooks.map((index) => booksAvailable[index])}
+      </ReadingList>
       {/* <div
         className={
           choosen.includes(true)
