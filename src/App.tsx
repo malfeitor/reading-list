@@ -87,7 +87,10 @@ export default function App() {
       >
         <h2>Reading-List</h2>
         <hr />
-        <div className="reading-list d-flex flex-column" ref={choosenDiv}></div>
+        <div
+          className="reading-list d-flex flex-column justify-content-center align-items-center"
+          ref={choosenDiv}
+        ></div>
       </div>
     </div>
   )
