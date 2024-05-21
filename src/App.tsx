@@ -1,8 +1,11 @@
 import { useEffect, useRef, useState } from 'react'
 import './App.scss'
 import { library } from './data/books.json'
-import { moveBooks, updateReadingListBooksSize } from './utils/animations'
 import { animate } from 'motion'
+import { moveBooks, updateReadingListBooksSize } from './utils/animations'
+import Book from './component/Book'
+import Bookshelf from './component/Bookshelf'
+import ReadingList from './component/ReadingList'
 
 const bookList = library.map((item) => item.book.cover)
 
