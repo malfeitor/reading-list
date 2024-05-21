@@ -9,9 +9,19 @@ type BookProps = {
   img: string
   style: CSSObjectType | void
   animation: CSSObjectType | void
+  onClick: () => void
+  mouseOver: () => void
+  mouseOut: () => void
 }
 
-export default function Book({ img, style, animation }: BookProps) {
+export default function Book({
+  img,
+  style,
+  animation,
+  onClick,
+  mouseOver,
+  mouseOut,
+}: BookProps) {
   return (
     <Col>
       <motion.img
@@ -19,6 +29,9 @@ export default function Book({ img, style, animation }: BookProps) {
         className="book rounded-4"
         style={style as CSSObjectType}
         animate={animation as CSSObjectType}
+        onClick={onClick}
+        onMouseOver={mouseOver}
+        onMouseOut={mouseOut}
       />
     </Col>
   )

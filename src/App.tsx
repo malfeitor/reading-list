@@ -11,12 +11,35 @@ import { Container } from 'react-bootstrap'
 const bookList = library.map((item) => item.book.cover)
 
 export default function App() {
-  const booksAvailable = bookList.map((item) => <Book img={item} />)
-  const [bookshelfBooks, setBookshelfBooks] = useState([...booksAvailable])
-  const [readingBooks, setReadingBooks] = useState([])
-  // const [choosen, setChoosen] = useState([...bookList.map(() => false)])
   const [styleList, setStyleList] = useState([...bookList.map(() => {})])
   const [animList, setAnimList] = useState([...bookList.map(() => {})])
+
+  const booksAvailable = bookList.map((item, index) => (
+    <Book
+      img={item}
+      style={styleList[index]}
+      animation={animList[index]}
+      key={index}
+      onClick={() => bookClick(index)}
+      mouseOut={() => bookOut()}
+      mouseOver={() => bookOver(index)}
+    />
+  ))
+
+  const [bookshelfBooks, setBookshelfBooks] = useState([...booksAvailable])
+  const [readingBooks, setReadingBooks] = useState([])
+
+  function bookClick(bookIndex) {
+    alert(bookIndex)
+  }
+
+  function bookOver(bookIndex) {
+    console.log('Over ' + bookIndex)
+  }
+
+  function bookOut() {
+    console.log('Out')
+  }
   // const [justAddedBook, setLastAction] = useState(-1)
 
   // const [rectList, setRectList] = useState<DOMRect[]>([])
