@@ -1,5 +1,5 @@
 import { ReactNode } from 'react'
-// import { Row } from 'react-bootstrap'
+import { Col } from 'react-bootstrap'
 
 type ReadingListProps = {
   children: ReactNode[]
@@ -7,8 +7,8 @@ type ReadingListProps = {
 
 export default function ReadingList({ children }: ReadingListProps) {
   return (
-    <div className={children.length > 0 ? 'choosen' : 'choosen hidden'}>
+    <Col sm={3} className={children.length > 0 ? 'choosen' : 'choosen hidden'}>
       {children}
-    </div>
+    </Col>
   )
 }
