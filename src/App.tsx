@@ -224,38 +224,6 @@ export default function App() {
       <ReadingList>
         {readingBooks.map((index) => booksAvailable[index])}
       </ReadingList>
-
-      {/* <div
-        className={
-          choosen.includes(true)
-            ? 'not-choosen d-flex flex-wrap col-sm-9'
-            : 'not-choosen d-flex flex-wrap col-sm-12'
-        }
-        ref={notChoosenDiv}
-      >
-        {bookList.map((book, index) => (
-          <img
-            className="book rounded-4"
-            src={book}
-            ref={(e) => (booksRef.current[index] = e)}
-            onClick={() => toggleBook(index)}
-            key={index}
-            style={styleList[index]}
-          />
-        ))}
-      </div>
-      <div
-        className={
-          choosen.includes(true) ? 'choosen col-sm-3' : 'choosen hidden'
-        }
-      >
-        <h2>Reading-List</h2>
-        <hr />
-        <div
-          className="reading-list d-flex flex-column justify-content-center align-items-center"
-          ref={choosenDiv}
-        ></div>
-      </div> */}
     </Container>
   )
 }
