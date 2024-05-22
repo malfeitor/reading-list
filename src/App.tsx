@@ -1,18 +1,14 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import './App.scss'
 import { library } from './data/books.json'
-// import { animate } from 'framer-motion'
-// import { moveBooks, updateReadingListBooksSize } from './utils/animations'
 import Book from './component/Book'
 import Bookshelf from './component/Bookshelf'
 import ReadingList from './component/ReadingList'
 import { Container } from 'react-bootstrap'
-import { AnimatePresence } from 'framer-motion'
 
 const bookList = library.map((item) => item.book.cover)
 
 export default function App() {
-  // const [styleList, setStyleList] = useState(bookList.map(() => {}))
   const [animList, setAnimList] = useState(bookList.map(() => {}))
   const [lastBookMoved, setLastBookMoved] = useState(-1)
 
@@ -20,27 +16,16 @@ export default function App() {
 
   const booksRef: React.MutableRefObject<HTMLImageElement[]> = useRef([])
   let animationRunning = false
-  // const setDOMRect = (id: number, rect: DOMRect) => {
-  // console.log('domrect index ' + id)
-  // console.log(rect)
-  // getBooksDOMRect[id] = rect
-  // setBooksDOMRect(newBooksBOMRect)
-  // }
-
-  // const [booksRectCallback, setBooksRectCallback] = useState([])
 
   const booksAvailable = bookList.map((item, index) => (
     <Book
       img={item}
-      // style={styleList[index]}
       animation={animList[index]}
       key={index}
       onClick={() => bookClick(index)}
       mouseOut={() => bookOut(index)}
       mouseOver={() => bookOver(index)}
       ref={(e) => (booksRef.current[index] = e as HTMLImageElement)}
-      // booksRectCallback={booksRectCallback}
-      // setBooksRectCallback={setBooksRectCallback}
       {...animList[index]}
     />
   ))
