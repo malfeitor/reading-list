@@ -6,5 +6,5 @@ type BookshelfProps = {
 }
 
 export default function Bookshelf({ children }: BookshelfProps) {
-  return <Row className="not-choosen">{children}</Row>
+  return <div className="not-choosen d-flex flex-wrap col-sm-9">{children}</div>
 }

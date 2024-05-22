@@ -14,3 +14,4 @@ hover les book choosen -> décaler la margin et hop ?
 book choosen > recalculer margin à chaque render
 
 bloquer actions avec await sur les animate() 
+probleme : livres re-render fait sauter les animations

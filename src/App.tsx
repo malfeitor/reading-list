@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import './App.scss'
 import { library } from './data/books.json'
 // import { animate } from 'framer-motion'
@@ -7,22 +7,41 @@ import Book from './component/Book'
 import Bookshelf from './component/Bookshelf'
 import ReadingList from './component/ReadingList'
 import { Container } from 'react-bootstrap'
+import { AnimatePresence } from 'framer-motion'
 
 const bookList = library.map((item) => item.book.cover)
 
 export default function App() {
-  const [styleList, setStyleList] = useState([...bookList.map(() => {})])
-  const [animList, setAnimList] = useState([...bookList.map(() => {})])
+  // const [styleList, setStyleList] = useState(bookList.map(() => {}))
+  const [animList, setAnimList] = useState(bookList.map(() => {}))
+  const [lastBookMoved, setLastBookMoved] = useState(-1)
+
+  const [booksDOMRect, setBooksDOMRect] = useState<DOMRect[]>([])
+
+  const booksRef: React.MutableRefObject<HTMLImageElement[]> = useRef([])
+  let animationRunning = false
+  // const setDOMRect = (id: number, rect: DOMRect) => {
+  // console.log('domrect index ' + id)
+  // console.log(rect)
+  // getBooksDOMRect[id] = rect
+  // setBooksDOMRect(newBooksBOMRect)
+  // }
+
+  // const [booksRectCallback, setBooksRectCallback] = useState([])
 
   const booksAvailable = bookList.map((item, index) => (
     <Book
       img={item}
-      style={styleList[index]}
+      // style={styleList[index]}
       animation={animList[index]}
       key={index}
       onClick={() => bookClick(index)}
       mouseOut={() => bookOut(index)}
       mouseOver={() => bookOver(index)}
+      ref={(e) => (booksRef.current[index] = e as HTMLImageElement)}
+      // booksRectCallback={booksRectCallback}
+      // setBooksRectCallback={setBooksRectCallback}
+      {...animList[index]}
     />
   ))
 
@@ -32,6 +51,13 @@ export default function App() {
   const [readingBooks, setReadingBooks] = useState<number[]>([])
 
   function bookClick(bookIndex: number) {
+    // dont do anything when animation running
+    if (animationRunning) return
+    // snapshot DOMRects
+    setBooksDOMRect(
+      booksRef.current.map((book) => book.getBoundingClientRect())
+    )
+    // reorganize books
     const newReadingBooks = [...readingBooks]
     const newBookshelf = [...bookshelfBooks]
     if (bookshelfBooks.includes(bookIndex)) {
@@ -45,17 +71,15 @@ export default function App() {
     }
     setBookshelfBooks(newBookshelf)
     setReadingBooks(newReadingBooks)
-    //   if (animationRunning) return
-    //   // snapshot books positions for animation
-    //   setRectList(bookRefs.current.map((book) => book.getBoundingClientRect()))
 
-    //   const book = bookRefs.current[index]
+    // // styling books
+    // const newStyle = [...styleList]
+    // bookshelfBooks.map((index) => (styleList[index] = { zIndex: 0 }))
+
+    setLastBookMoved(bookIndex)
+    //   const book = booksRef.current[index]
     //   const newStyle = [...styleList]
-    //   if (choosen[index]) {
-    //     book.classList.remove('selected')
-    //     choosenDiv.current!.removeChild(book)
-    //     notChoosenDiv.current!.append(book)
-    //     newStyle[index] = { zIndex: 0, margin: 0 }
+    //     newStyle[index] = , margin: 0 }
     //     setLastAction(-1)
     //   } else {
     //     book.classList.add('selected')
@@ -67,7 +91,6 @@ export default function App() {
     //   const newChoosen = [...choosen]
     //   newChoosen[index] = !newChoosen[index]
     //   setChoosen(newChoosen)
-    //   setStyleList(newStyle)
   }
 
   function bookOver(bookIndex: number) {
@@ -102,59 +125,96 @@ export default function App() {
     //     )
     //   })
   }
-  // const [justAddedBook, setLastAction] = useState(-1)
 
-  // const [rectList, setRectList] = useState<DOMRect[]>([])
+  useEffect(() => {
+    if (booksDOMRect.length > 0) {
+      animationRunning = true
+      const newAnimation = [...animList]
+      booksAvailable.map((item, index) => {
+        newAnimation[index] = {
+          animate: {
+            x: [
+              booksDOMRect[index].x -
+                booksRef.current[index].getBoundingClientRect().x,
+              0,
+            ],
+            y: [
+              booksDOMRect[index].y -
+                booksRef.current[index].getBoundingClientRect().y,
+              0,
+            ],
+          },
+        }
+      })
 
-  // const bookRefs = useRef<HTMLImageElement[]>([])
-  // const notChoosenDiv = useRef<HTMLDivElement>(null)
-  // const choosenDiv = useRef<HTMLDivElement>(null)
-
-  // const choosenBooksRect: DOMRect[] = []
-  // let animationRunning = false
-
-  // useEffect(() => {
-  //   if (rectList.length > 0) {
-  //     animationRunning = true
-  //     bookRefs.current.forEach((book, index) => {
-  //       book.removeEventListener('mouseover', book.bookOver)
-  //       book.removeEventListener('mouseout', book.bookOut)
-  //       if (!choosen[index] || index === justAddedBook) {
-  //         moveBooks({
-  //           elem: book,
-  //           oldRect: rectList[index],
-  //           newRect: book.getBoundingClientRect(),
-  //         })
-  //       }
-  //     })
-  //     const updatingStatus = updateReadingListBooksSize(
-  //       choosenDiv.current!.childNodes,
-  //       bookList.length
-  //     )
-  //     updatingStatus.forEach(
-  //       async (status, index) =>
-  //         await status.finished.then(() => {
-  //           if (index === updatingStatus.length - 1) {
-  //             choosenDiv.current!.childNodes.forEach((book, index) => {
-  //               choosenBooksRect[index] = (
-  //                 book as HTMLElement
-  //               ).getBoundingClientRect()
-  //               book.addEventListener(
-  //                 'mouseover',
-  //                 (book.bookOver = () => hoverBook(index))
-  //               )
-  //               book.addEventListener(
-  //                 'mouseout',
-  //                 (book.bookOut = () => blurBook())
-  //               )
-  //             })
-  //           }
-  //           animationRunning = false
-  //         })
-  //     )
-  //     if (updatingStatus.length === 0) animationRunning = false
-  //   }
-  // }, [rectList, choosen, justAddedBook])
+      // bookshelfBooks.map((index) => {
+      //   const translate = {
+      //     x:
+      //       booksDOMRect[index].x -
+      //       booksRef.current[index].getBoundingClientRect().x,
+      //     y:
+      //       booksDOMRect[index].y -
+      //       booksRef.current[index].getBoundingClientRect().y,
+      //   }
+      //   // // first we set it at his old place
+      //   // animate(elem, { x: translate.x, y: translate.y }, { duration: 0 })
+      //   // // then we move it
+      //   // animate(elem, { x: 0, y: 0, scale: 1 }, { duration: 1 })
+      //   animList[index] = { x: [translate.x, 0], y: [translate.y, 0], scale: 1 }
+      //   console.log(animList[index])
+      // })
+      // animList[lastBookMoved] = {
+      //   x: [
+      //     booksDOMRect[lastBookMoved].x -
+      //       booksRef.current[lastBookMoved].getBoundingClientRect().x,
+      //     0,
+      //   ],
+      //   y: [
+      //     booksDOMRect[lastBookMoved].y -
+      //       booksRef.current[lastBookMoved].getBoundingClientRect().y,
+      //     0,
+      //   ],
+      //   scale: 1,
+      // }
+      // booksRef.current.forEach((book, index) => {
+      //   if (!choosen[index] || index === justAddedBook) {
+      //     moveBooks({
+      //       elem: book,
+      //       oldRect: rectList[index],
+      //       newRect: book.getBoundingClientRect(),
+      //     })
+      //   }
+      // })
+      // const updatingStatus = updateReadingListBooksSize(
+      //   choosenDiv.current!.childNodes,
+      //   bookList.length
+      // )
+      // updatingStatus.forEach(
+      //   async (status, index) =>
+      //     await status.finished.then(() => {
+      //       if (index === updatingStatus.length - 1) {
+      //         choosenDiv.current!.childNodes.forEach((book, index) => {
+      //           choosenBooksRect[index] = (
+      //             book as HTMLElement
+      //           ).getBoundingClientRect()
+      //           book.addEventListener(
+      //             'mouseover',
+      //             (book.bookOver = () => hoverBook(index))
+      //           )
+      //           book.addEventListener(
+      //             'mouseout',
+      //             (book.bookOut = () => blurBook())
+      //           )
+      //         })
+      //       }
+      //       animationRunning = false
+      //     })
+      // )
+      // if (updatingStatus.length === 0) animationRunning = false
+      setAnimList(newAnimation)
+      animationRunning = false
+    }
+  }, [booksDOMRect])
 
   return (
     <Container fluid className="d-flex">
@@ -164,6 +224,7 @@ export default function App() {
       <ReadingList>
         {readingBooks.map((index) => booksAvailable[index])}
       </ReadingList>
+
       {/* <div
         className={
           choosen.includes(true)
@@ -176,7 +237,7 @@ export default function App() {
           <img
             className="book rounded-4"
             src={book}
-            ref={(e) => (bookRefs.current[index] = e)}
+            ref={(e) => (booksRef.current[index] = e)}
             onClick={() => toggleBook(index)}
             key={index}
             style={styleList[index]}
