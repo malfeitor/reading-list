@@ -130,7 +130,7 @@ export default function App() {
           <img
             className="book rounded-4"
             src={book}
-            ref={(e) => (bookRefs.current[index] = e)}
+            ref={(e) => (bookRefs.current[index] = e as HTMLImageElement)}
             onClick={() => toggleBook(index)}
             key={index}
             style={styleList[index]}
