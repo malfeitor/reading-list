@@ -8,6 +8,8 @@ type ReadingListProps = {
 export default function ReadingList({ children }: ReadingListProps) {
   return (
     <Col sm={3} className={children.length > 0 ? 'choosen' : 'choosen hidden'}>
+      <h2>Reading-list</h2>
+      <hr />
       {children}
     </Col>
   )
