@@ -8,8 +8,18 @@ import { Container } from 'react-bootstrap'
 
 const bookList = library.map((item) => item.book.cover)
 
+type AnimationObject = {
+  [key: string]: {
+    [key: string]: number | number[] | string | string[]
+  }
+}
+
 export default function App() {
-  const [animList, setAnimList] = useState(bookList.map(() => {}))
+  const [animList, setAnimList] = useState<AnimationObject[]>(
+    bookList.map(() => ({
+      transition: { ease: 'easeInOut', duration: 1 },
+    }))
+  )
   const [lastBookMoved, setLastBookMoved] = useState(-1)
 
   const [booksDOMRect, setBooksDOMRect] = useState<DOMRect[]>([])
@@ -46,11 +56,9 @@ export default function App() {
     const newReadingBooks = [...readingBooks]
     const newBookshelf = [...bookshelfBooks]
     if (bookshelfBooks.includes(bookIndex)) {
-      console.log('Bookshelf contains ' + bookIndex)
       newReadingBooks.push(bookIndex)
       newBookshelf.splice(newBookshelf.indexOf(bookIndex), 1)
     } else {
-      console.log('Reading list contains ' + bookIndex)
       newBookshelf.push(bookIndex)
       newReadingBooks.splice(newReadingBooks.indexOf(bookIndex), 1)
     }
@@ -115,39 +123,44 @@ export default function App() {
     if (booksDOMRect.length > 0) {
       animationRunning = true
       const newAnimation = [...animList]
-      booksAvailable.map((item, index) => {
-        newAnimation[index] = {
+      readingBooks.map((item) => {
+        newAnimation[item] = {
+          ...newAnimation[item],
+          animate: {},
+        }
+      })
+      bookshelfBooks.map((item, index) => {
+        newAnimation[item] = {
+          ...newAnimation[item],
           animate: {
             x: [
-              booksDOMRect[index].x -
-                booksRef.current[index].getBoundingClientRect().x,
+              booksDOMRect[item].x -
+                booksRef.current[item].getBoundingClientRect().x,
               0,
             ],
             y: [
-              booksDOMRect[index].y -
-                booksRef.current[index].getBoundingClientRect().y,
+              booksDOMRect[item].y -
+                booksRef.current[item].getBoundingClientRect().y,
               0,
             ],
           },
         }
       })
-
-      // bookshelfBooks.map((index) => {
-      //   const translate = {
-      //     x:
-      //       booksDOMRect[index].x -
-      //       booksRef.current[index].getBoundingClientRect().x,
-      //     y:
-      //       booksDOMRect[index].y -
-      //       booksRef.current[index].getBoundingClientRect().y,
-      //   }
-      //   // // first we set it at his old place
-      //   // animate(elem, { x: translate.x, y: translate.y }, { duration: 0 })
-      //   // // then we move it
-      //   // animate(elem, { x: 0, y: 0, scale: 1 }, { duration: 1 })
-      //   animList[index] = { x: [translate.x, 0], y: [translate.y, 0], scale: 1 }
-      //   console.log(animList[index])
-      // })
+      newAnimation[lastBookMoved] = {
+        ...newAnimation[lastBookMoved],
+        animate: {
+          x: [
+            booksDOMRect[lastBookMoved].x -
+              booksRef.current[lastBookMoved].getBoundingClientRect().x,
+            0,
+          ],
+          y: [
+            booksDOMRect[lastBookMoved].y -
+              booksRef.current[lastBookMoved].getBoundingClientRect().y,
+            0,
+          ],
+        },
+      }
       // animList[lastBookMoved] = {
       //   x: [
       //     booksDOMRect[lastBookMoved].x -
@@ -196,6 +209,7 @@ export default function App() {
       //     })
       // )
       // if (updatingStatus.length === 0) animationRunning = false
+      // debugger
       setAnimList(newAnimation)
       animationRunning = false
     }
