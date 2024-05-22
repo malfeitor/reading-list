@@ -218,7 +218,7 @@ export default function App() {
 
   return (
     <Container fluid className="d-flex">
-      <Bookshelf>
+      <Bookshelf collapsed={readingBooks.length > 0}>
         {bookshelfBooks.map((index) => booksAvailable[index])}
       </Bookshelf>
       <ReadingList>
