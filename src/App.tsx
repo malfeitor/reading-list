@@ -54,34 +54,36 @@ export default function App() {
   function bookOver(bookIndex: number) {
     if (readingBooks.includes(bookIndex)) {
       console.log('Over ' + bookIndex)
+
+      // choosenDiv.current!.childNodes.forEach((book, index) => {
+      //     if (index < bookOverIndex) {
+      //       animate(
+      //         book as HTMLElement,
+      //         {
+      //           y:
+      //             choosenBooksRect[index].y +
+      //             choosenBooksRect[index].height / 2 +
+      //             30,
+      //         },
+      //         { duration: 1 }
+      //       )
+      //     }
+      //   })
     }
-    // choosenDiv.current!.childNodes.forEach((book, index) => {
-    //     if (index < bookOverIndex) {
-    //       animate(
-    //         book as HTMLElement,
-    //         {
-    //           y:
-    //             choosenBooksRect[index].y +
-    //             choosenBooksRect[index].height / 2 +
-    //             30,
-    //         },
-    //         { duration: 1 }
-    //       )
-    //     }
-    //   })
   }
 
   function bookOut(bookIndex: number) {
     if (readingBooks.includes(bookIndex)) {
       console.log('Out')
+
+      //   choosenDiv.current!.childNodes.forEach((book, index) => {
+      //     animate(
+      //       book as HTMLElement,
+      //       { y: choosenBooksRect[index].y + choosenBooksRect[index].height / 3 },
+      //       { duration: 1 }
+      //     )
+      //   })
     }
-    //   choosenDiv.current!.childNodes.forEach((book, index) => {
-    //     animate(
-    //       book as HTMLElement,
-    //       { y: choosenBooksRect[index].y + choosenBooksRect[index].height / 3 },
-    //       { duration: 1 }
-    //     )
-    //   })
   }
 
   useEffect(() => {
@@ -93,7 +95,7 @@ export default function App() {
         if (id !== lastBookMoved) {
           const translate = getTranslate(id)
           if (translate.x !== 0 || translate.y !== 0) {
-            delay += 0.1
+            delay += 0.05
 
             pendingAnimations.push(
               animate(
