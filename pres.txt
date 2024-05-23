@@ -15,3 +15,5 @@ book choosen > recalculer margin à chaque render
 
 bloquer actions avec await sur les animate() 
 probleme : livres re-render fait sauter les animations
+> car re définition de onclick, mouseover et mouseout
+> ne pas changer le state danas useEffect !

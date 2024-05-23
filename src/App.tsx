@@ -5,45 +5,28 @@ import Book from './component/Book'
 import Bookshelf from './component/Bookshelf'
 import ReadingList from './component/ReadingList'
 import { Container } from 'react-bootstrap'
+import { useAnimate } from 'framer-motion'
 
 const bookList = library.map((item) => item.book.cover)
 
-type AnimationObject = {
-  [key: string]: {
-    [key: string]: number | number[] | string | string[]
-  }
-}
-
 export default function App() {
-  const [animList, setAnimList] = useState<AnimationObject[]>(
-    bookList.map(() => ({
-      transition: { ease: 'easeInOut', duration: 1 },
-    }))
-  )
+  const [scope, animate] = useAnimate()
   const [lastBookMoved, setLastBookMoved] = useState(-1)
-
   const [booksDOMRect, setBooksDOMRect] = useState<DOMRect[]>([])
+  const [bookshelfBooks, setBookshelfBooks] = useState<number[]>([
+    ...bookList.keys(),
+  ])
+  const [readingBooks, setReadingBooks] = useState<number[]>([])
 
   const booksRef: React.MutableRefObject<HTMLImageElement[]> = useRef([])
   let animationRunning = false
 
-  const booksAvailable = bookList.map((item, index) => (
-    <Book
-      img={item}
-      animation={animList[index]}
-      key={index}
-      onClick={() => bookClick(index)}
-      mouseOut={() => bookOut(index)}
-      mouseOver={() => bookOver(index)}
-      ref={(e) => (booksRef.current[index] = e as HTMLImageElement)}
-      {...animList[index]}
-    />
-  ))
-
-  const [bookshelfBooks, setBookshelfBooks] = useState<number[]>(
-    booksAvailable.map((item, index) => index)
-  )
-  const [readingBooks, setReadingBooks] = useState<number[]>([])
+  function getTranslate(id: number) {
+    return {
+      x: booksDOMRect[id].x - booksRef.current[id].getBoundingClientRect().x,
+      y: booksDOMRect[id].y - booksRef.current[id].getBoundingClientRect().y,
+    }
+  }
 
   function bookClick(bookIndex: number) {
     // dont do anything when animation running
@@ -62,28 +45,10 @@ export default function App() {
       newBookshelf.push(bookIndex)
       newReadingBooks.splice(newReadingBooks.indexOf(bookIndex), 1)
     }
+    // save State
     setBookshelfBooks(newBookshelf)
     setReadingBooks(newReadingBooks)
-
-    // // styling books
-    // const newStyle = [...styleList]
-    // bookshelfBooks.map((index) => (styleList[index] = { zIndex: 0 }))
-
     setLastBookMoved(bookIndex)
-    //   const book = booksRef.current[index]
-    //   const newStyle = [...styleList]
-    //     newStyle[index] = , margin: 0 }
-    //     setLastAction(-1)
-    //   } else {
-    //     book.classList.add('selected')
-    //     notChoosenDiv.current!.removeChild(book)
-    //     choosenDiv.current!.append(book)
-    //     setLastAction(index)
-    //   }
-
-    //   const newChoosen = [...choosen]
-    //   newChoosen[index] = !newChoosen[index]
-    //   setChoosen(newChoosen)
   }
 
   function bookOver(bookIndex: number) {
@@ -122,106 +87,72 @@ export default function App() {
   useEffect(() => {
     if (booksDOMRect.length > 0) {
       animationRunning = true
-      const newAnimation = [...animList]
-      readingBooks.map((item) => {
-        newAnimation[item] = {
-          ...newAnimation[item],
-          animate: {},
+      let delay = 0.0
+      const pendingAnimations = []
+      bookshelfBooks.map((id) => {
+        if (id !== lastBookMoved) {
+          const translate = getTranslate(id)
+          if (translate.x !== 0 || translate.y !== 0) {
+            delay += 0.1
+
+            pendingAnimations.push(
+              animate(
+                booksRef.current[id],
+                {
+                  x: [translate.x, 0],
+                  y: [translate.y, 0],
+                },
+                { delay: delay }
+              )
+            )
+          }
         }
       })
-      bookshelfBooks.map((item, index) => {
-        newAnimation[item] = {
-          ...newAnimation[item],
-          animate: {
-            x: [
-              booksDOMRect[item].x -
-                booksRef.current[item].getBoundingClientRect().x,
-              0,
-            ],
-            y: [
-              booksDOMRect[item].y -
-                booksRef.current[item].getBoundingClientRect().y,
-              0,
-            ],
-          },
-        }
+      delay += 0.1
+      pendingAnimations.push(
+        animate(
+          booksRef.current[lastBookMoved],
+          {
+            x: [getTranslate(lastBookMoved).x, 0],
+            y: [getTranslate(lastBookMoved).y, 0],
+          }
+          // { delay: delay }
+        )
+      )
+
+      Promise.allSettled(pendingAnimations).then(() => {
+        animationRunning = false
       })
-      newAnimation[lastBookMoved] = {
-        ...newAnimation[lastBookMoved],
-        animate: {
-          x: [
-            booksDOMRect[lastBookMoved].x -
-              booksRef.current[lastBookMoved].getBoundingClientRect().x,
-            0,
-          ],
-          y: [
-            booksDOMRect[lastBookMoved].y -
-              booksRef.current[lastBookMoved].getBoundingClientRect().y,
-            0,
-          ],
-        },
-      }
-      // animList[lastBookMoved] = {
-      //   x: [
-      //     booksDOMRect[lastBookMoved].x -
-      //       booksRef.current[lastBookMoved].getBoundingClientRect().x,
-      //     0,
-      //   ],
-      //   y: [
-      //     booksDOMRect[lastBookMoved].y -
-      //       booksRef.current[lastBookMoved].getBoundingClientRect().y,
-      //     0,
-      //   ],
-      //   scale: 1,
-      // }
-      // booksRef.current.forEach((book, index) => {
-      //   if (!choosen[index] || index === justAddedBook) {
-      //     moveBooks({
-      //       elem: book,
-      //       oldRect: rectList[index],
-      //       newRect: book.getBoundingClientRect(),
-      //     })
-      //   }
-      // })
-      // const updatingStatus = updateReadingListBooksSize(
-      //   choosenDiv.current!.childNodes,
-      //   bookList.length
-      // )
-      // updatingStatus.forEach(
-      //   async (status, index) =>
-      //     await status.finished.then(() => {
-      //       if (index === updatingStatus.length - 1) {
-      //         choosenDiv.current!.childNodes.forEach((book, index) => {
-      //           choosenBooksRect[index] = (
-      //             book as HTMLElement
-      //           ).getBoundingClientRect()
-      //           book.addEventListener(
-      //             'mouseover',
-      //             (book.bookOver = () => hoverBook(index))
-      //           )
-      //           book.addEventListener(
-      //             'mouseout',
-      //             (book.bookOut = () => blurBook())
-      //           )
-      //         })
-      //       }
-      //       animationRunning = false
-      //     })
-      // )
-      // if (updatingStatus.length === 0) animationRunning = false
-      // debugger
-      setAnimList(newAnimation)
-      animationRunning = false
     }
   }, [booksDOMRect])
 
   return (
-    <Container fluid className="d-flex">
+    <Container fluid className="d-flex" ref={scope}>
       <Bookshelf collapsed={readingBooks.length > 0}>
-        {bookshelfBooks.map((index) => booksAvailable[index])}
+        {bookshelfBooks.map((index) => (
+          <Book
+            img={bookList[index]}
+            key={index}
+            id={index}
+            onClick={bookClick}
+            mouseOut={bookOut}
+            mouseOver={bookOver}
+            ref={(e) => (booksRef.current[index] = e as HTMLImageElement)}
+          />
+        ))}
       </Bookshelf>
       <ReadingList>
-        {readingBooks.map((index) => booksAvailable[index])}
+        {readingBooks.map((index) => (
+          <Book
+            img={bookList[index]}
+            key={index}
+            id={index}
+            onClick={bookClick}
+            mouseOut={bookOut}
+            mouseOver={bookOver}
+            ref={(e) => (booksRef.current[index] = e as HTMLImageElement)}
+          />
+        ))}
       </ReadingList>
     </Container>
   )

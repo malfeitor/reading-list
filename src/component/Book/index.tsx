@@ -3,24 +3,29 @@ import { Ref, forwardRef } from 'react'
 
 type BookProps = {
   img: string
-  onClick: () => void
-  mouseOver: () => void
-  mouseOut: () => void
+  id: number
+  onClick: (id: number) => void
+  mouseOver: (id: number) => void
+  mouseOut: (id: number) => void
 }
 
 const Book = forwardRef(function Book(
-  { img, onClick, mouseOver, mouseOut, ...props }: BookProps,
+  { img, id, onClick, mouseOver, mouseOut, ...props }: BookProps,
   ref: Ref<HTMLImageElement>
 ) {
+  const onBookClick = () => onClick(id)
+  const onBookOver = () => mouseOver(id)
+  const onBookOut = () => mouseOut(id)
+
   return (
     <motion.img
       src={img}
       className="book rounded-4"
-      onClick={onClick}
-      onMouseOver={mouseOver}
-      onMouseOut={mouseOut}
+      onClick={onBookClick}
+      onMouseOver={onBookOver}
+      onMouseOut={onBookOut}
       ref={ref}
-      transition={{ ease: 'easeInOut', duration: 1 }}
+      id={`book-${id}`}
       {...props}
     />
   )
