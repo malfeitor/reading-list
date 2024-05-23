@@ -51,38 +51,36 @@ export default function App() {
     setLastBookMoved(bookIndex)
   }
 
-  function bookOver(bookIndex: number) {
-    if (readingBooks.includes(bookIndex)) {
-      console.log('Over ' + bookIndex)
-
-      // choosenDiv.current!.childNodes.forEach((book, index) => {
-      //     if (index < bookOverIndex) {
-      //       animate(
-      //         book as HTMLElement,
-      //         {
-      //           y:
-      //             choosenBooksRect[index].y +
-      //             choosenBooksRect[index].height / 2 +
-      //             30,
-      //         },
-      //         { duration: 1 }
-      //       )
-      //     }
-      //   })
+  function bookOver(bookId: number) {
+    if (readingBooks.includes(bookId)) {
+      const bookIndex = readingBooks.indexOf(bookId)
+      readingBooks.forEach((id, index) => {
+        if (index < bookIndex) {
+          const currentBook = booksRef.current[id]
+          animate(
+            currentBook,
+            {
+              y: booksDOMRect[id].y + currentBook.height / 2 + 30,
+            },
+            { duration: 0.5 }
+          )
+        }
+      })
     }
   }
 
   function bookOut(bookIndex: number) {
     if (readingBooks.includes(bookIndex)) {
-      console.log('Out')
-
-      //   choosenDiv.current!.childNodes.forEach((book, index) => {
-      //     animate(
-      //       book as HTMLElement,
-      //       { y: choosenBooksRect[index].y + choosenBooksRect[index].height / 3 },
-      //       { duration: 1 }
-      //     )
-      //   })
+      readingBooks.forEach((id) => {
+        const currentBook = booksRef.current[id]
+        animate(
+          currentBook,
+          {
+            y: booksDOMRect[id].y + currentBook.height / 3,
+          },
+          { duration: 0.5 }
+        )
+      })
     }
   }
 
