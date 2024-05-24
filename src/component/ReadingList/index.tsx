@@ -1,5 +1,6 @@
 import { ReactNode } from 'react'
 import { Col } from 'react-bootstrap'
+import './index.scss'
 
 type ReadingListProps = {
   children: ReactNode[]
