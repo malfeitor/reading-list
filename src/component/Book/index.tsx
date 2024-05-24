@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion'
 import { Ref, forwardRef } from 'react'
+import './index.scss'
 
 type BookProps = {
   img: string
