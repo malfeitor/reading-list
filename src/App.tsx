@@ -19,18 +19,13 @@ export default function App() {
   const [readingBooks, setReadingBooks] = useState<number[]>([])
 
   const booksRef: React.MutableRefObject<HTMLImageElement[]> = useRef([])
-  let animationRunning = false
 
-  function getTranslate(id: number) {
-    return {
-      x: booksDOMRect[id].x - booksRef.current[id].getBoundingClientRect().x,
-      y: booksDOMRect[id].y - booksRef.current[id].getBoundingClientRect().y,
-    }
-  }
+  let animationRunning = false
 
   function bookClick(bookIndex: number) {
     // dont do anything when animation running
     if (animationRunning) return
+    updateReadingListBooks
     // snapshot DOMRects
     setBooksDOMRect(
       booksRef.current.map((book) => book.getBoundingClientRect())
@@ -53,50 +48,29 @@ export default function App() {
 
   function bookOver(bookId: number) {
     if (readingBooks.includes(bookId)) {
-      const bookIndex = readingBooks.indexOf(bookId)
-      readingBooks.forEach((id, index) => {
-        if (index < bookIndex) {
-          const currentBook = booksRef.current[id]
-          animate(
-            currentBook,
-            {
-              y: booksDOMRect[id].y + currentBook.height / 2 + 30,
-            },
-            { duration: 0.5 }
-          )
-        }
-      })
+      bookOverAnimation(bookId)
     }
   }
 
   function bookOut(bookIndex: number) {
     if (readingBooks.includes(bookIndex)) {
-      readingBooks.forEach((id) => {
-        const currentBook = booksRef.current[id]
-        animate(
-          currentBook,
-          {
-            y: booksDOMRect[id].y + currentBook.height / 3,
-          },
-          { duration: 0.5 }
-        )
-      })
+      updateReadingListBooks()
     }
   }
 
   useEffect(() => {
     if (booksDOMRect.length > 0) {
-      animationRunning = true
+      // animationRunning = true
       let delay = 0.0
       const pendingAnimations = []
-      bookshelfBooks.map((id) => {
-        if (id !== lastBookMoved) {
-          const translate = getTranslate(id)
-          if (translate.x !== 0 || translate.y !== 0) {
-            delay += 0.05
-
-            pendingAnimations.push(
-              animate(
+      // animate Bookshelfs's books
+      pendingAnimations.push(
+        bookshelfBooks.map((id) => {
+          if (id !== lastBookMoved) {
+            const translate = getTranslate(id)
+            if (translate.x !== 0 || translate.y !== 0) {
+              delay += 0.05
+              return animate(
                 booksRef.current[id],
                 {
                   x: [translate.x, 0],
@@ -104,11 +78,12 @@ export default function App() {
                 },
                 { delay: delay }
               )
-            )
+            }
           }
-        }
-      })
+        })
+      )
       delay += 0.1
+      // animate the clicked book
       pendingAnimations.push(
         animate(
           booksRef.current[lastBookMoved],
@@ -119,12 +94,55 @@ export default function App() {
           // { delay: delay }
         )
       )
-
+      // animate Reading list books
+      pendingAnimations.push(updateReadingListBooks())
+      // wait for animation to finish
       Promise.allSettled(pendingAnimations).then(() => {
         animationRunning = false
       })
     }
   }, [booksDOMRect])
+
+  function updateReadingListBooks(duration = 1) {
+    return readingBooks.map((id, index) => {
+      const reversedIndex = bookList.length - index
+      const ratio = (reversedIndex * 2) / bookList.length
+      const remainingBooks = readingBooks.length - (index + 1)
+      const heigthDiff = 7.5 * readingBooks.length
+      return animate(
+        booksRef.current[id],
+        {
+          zIndex: reversedIndex,
+          scale: 1 + 0.05 * reversedIndex,
+          y: 250 - heigthDiff + 20 * ratio * remainingBooks,
+        },
+        { duration: duration }
+      )
+    })
+  }
+
+  function bookOverAnimation(bookId: number) {
+    const bookIndex = readingBooks.indexOf(bookId)
+    readingBooks.forEach((id, index) => {
+      if (index < bookIndex) {
+        const currentBook = booksRef.current[id]
+        animate(
+          currentBook,
+          {
+            y: booksDOMRect[id].y + currentBook.height / 2 + 30,
+          },
+          { duration: 0.5 }
+        )
+      }
+    })
+  }
+
+  function getTranslate(id: number) {
+    return {
+      x: booksDOMRect[id].x - booksRef.current[id].getBoundingClientRect().x,
+      y: booksDOMRect[id].y - booksRef.current[id].getBoundingClientRect().y,
+    }
+  }
 
   return (
     <Container fluid className="d-flex" ref={scope}>
