@@ -128,7 +128,7 @@ export default function App() {
     return {
       zIndex: reversedIndex,
       scale: 1 + 0.05 * reversedIndex,
-      y: 250 - heigthDiff + 20 * ratio * remainingBooks,
+      y: 200 - heigthDiff + 20 * ratio * remainingBooks,
     }
   }
 
