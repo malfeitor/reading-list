@@ -20,13 +20,7 @@ export default function App() {
 
   const booksRef: React.MutableRefObject<HTMLImageElement[]> = useRef([])
 
-  // let animationRunning = false
-  // const renderedBooksRects: DOMRect[] = []
-
   function bookClick(bookIndex: number) {
-    // dont do anything when animation running
-    // if (animationRunning) return
-    // Promise.all(updateReadingListBooks(0.001)).then(() => {
     // snapshot DOMRects
     setBooksDOMRect(
       booksRef.current.map((book) => book.getBoundingClientRect())
@@ -45,7 +39,6 @@ export default function App() {
     setBookshelfBooks(newBookshelf)
     setReadingBooks(newReadingBooks)
     setLastBookMoved(bookIndex)
-    // })
   }
 
   function bookOver(bookId: number) {
@@ -62,7 +55,6 @@ export default function App() {
 
   useEffect(() => {
     if (booksDOMRect.length > 0) {
-      // animationRunning = true
       let delay = 0.0
       const pendingAnimations = []
       // animate Bookshelfs's books
@@ -98,16 +90,6 @@ export default function App() {
       )
       // animate Reading list books
       pendingAnimations.push(updateReadingListBooks())
-      // wait for animation to finish
-      // ! BUG resolve only when removing book from reading list
-      Promise.all(pendingAnimations).then(() => {
-        console.log('render animations completed')
-        // animationRunning = false
-        // renderedBooksRects.push(
-        //   booksRef.current.map((book) => book.getBoundingClientRect())
-        // )
-      })
-      // save new DOMRect to stateless const
     }
   }, [booksDOMRect])
 
@@ -127,7 +109,10 @@ export default function App() {
         animate(
           currentBook,
           {
-            y: getReadingListBookAnimation(id).y + currentBook.height / 2 + 30,
+            y:
+              getReadingListBookAnimation(id).y +
+              currentBook.height -
+              7.5 * index,
           },
           { duration: 0.5 }
         )
