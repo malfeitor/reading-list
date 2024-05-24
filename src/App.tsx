@@ -20,12 +20,13 @@ export default function App() {
 
   const booksRef: React.MutableRefObject<HTMLImageElement[]> = useRef([])
 
-  let animationRunning = false
+  // let animationRunning = false
+  // const renderedBooksRects: DOMRect[] = []
 
   function bookClick(bookIndex: number) {
     // dont do anything when animation running
-    if (animationRunning) return
-    updateReadingListBooks
+    // if (animationRunning) return
+    // Promise.all(updateReadingListBooks(0.001)).then(() => {
     // snapshot DOMRects
     setBooksDOMRect(
       booksRef.current.map((book) => book.getBoundingClientRect())
@@ -44,6 +45,7 @@ export default function App() {
     setBookshelfBooks(newBookshelf)
     setReadingBooks(newReadingBooks)
     setLastBookMoved(bookIndex)
+    // })
   }
 
   function bookOver(bookId: number) {
@@ -97,27 +99,23 @@ export default function App() {
       // animate Reading list books
       pendingAnimations.push(updateReadingListBooks())
       // wait for animation to finish
-      Promise.allSettled(pendingAnimations).then(() => {
-        animationRunning = false
+      // ! BUG resolve only when removing book from reading list
+      Promise.all(pendingAnimations).then(() => {
+        console.log('render animations completed')
+        // animationRunning = false
+        // renderedBooksRects.push(
+        //   booksRef.current.map((book) => book.getBoundingClientRect())
+        // )
       })
+      // save new DOMRect to stateless const
     }
   }, [booksDOMRect])
 
   function updateReadingListBooks(duration = 1) {
     return readingBooks.map((id, index) => {
-      const reversedIndex = bookList.length - index
-      const ratio = (reversedIndex * 2) / bookList.length
-      const remainingBooks = readingBooks.length - (index + 1)
-      const heigthDiff = 7.5 * readingBooks.length
-      return animate(
-        booksRef.current[id],
-        {
-          zIndex: reversedIndex,
-          scale: 1 + 0.05 * reversedIndex,
-          y: 250 - heigthDiff + 20 * ratio * remainingBooks,
-        },
-        { duration: duration }
-      )
+      return animate(booksRef.current[id], getReadingListBookAnimation(index), {
+        duration: duration,
+      })
     })
   }
 
@@ -129,12 +127,24 @@ export default function App() {
         animate(
           currentBook,
           {
-            y: booksDOMRect[id].y + currentBook.height / 2 + 30,
+            y: getReadingListBookAnimation(id).y + currentBook.height / 2 + 30,
           },
           { duration: 0.5 }
         )
       }
     })
+  }
+
+  function getReadingListBookAnimation(index: number) {
+    const reversedIndex = bookList.length - index
+    const ratio = (reversedIndex * 2) / bookList.length
+    const remainingBooks = readingBooks.length - (index + 1)
+    const heigthDiff = 7.5 * readingBooks.length
+    return {
+      zIndex: reversedIndex,
+      scale: 1 + 0.05 * reversedIndex,
+      y: 250 - heigthDiff + 20 * ratio * remainingBooks,
+    }
   }
 
   function getTranslate(id: number) {
