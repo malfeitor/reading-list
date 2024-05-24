@@ -110,7 +110,7 @@ export default function App() {
           currentBook,
           {
             y:
-              getReadingListBookAnimation(id).y +
+              getReadingListBookAnimation(index).y +
               currentBook.height -
               7.5 * index,
           },
